@@ -16,16 +16,22 @@ public class Queen extends Piece {
     @Override
     public List<Square> getAccessibleSquares() {
 
-        // Avoid duplicates
+        // Lägg till alla rutor som pjäsen påverkar
         List<Square> squares = new ArrayList<>(getInfluencedSquares());
+        // Ta bort de rutor som det finns en pjäs av samma färg på
         squares.removeIf(square -> square.hasPiece() && square.getPiece().getColor() == this.getColor());
         King king = getGame().getKing(this.getColor());
         List<Square> checkSquares = new ArrayList<>();
         ChessColor otherColor = Util.getOtherColor(this.getColor());
+
+        // Se om kungen är i schack
         if (king.isChecked()) {
+            // Loopa igenom alla de rutor där pjäsen skulle kunna blockera schack
             for (Square square : getGame().getKing(this.getColor()).getBlockableSquares()) {
+                // Om någon sådan finns, lägg till den i listan
                 if (squares.contains(square)) checkSquares.add(square);
             }
+            // Ta bort alla andra möjliga och lägg endast till the blockeringsbara rutorna
             squares.clear();
             squares.addAll(checkSquares);
         } else if (this.getSquares().contains(king.getSquare())){

@@ -27,20 +27,24 @@ public class Game {
     private boolean exit;
 
     private Game() {
+        // Initiera alla listor
         init();
 
+        // Skapa 8 kolumner och rader
         for (int i = 0; i < 8; i++) {
             columns.add(new Column(this, i));
             rows.add(new Row(this, i));
         }
 
+        // Skapa 30 diagonaler
         for (int i = 0; i < 30; i++) {
             diagonals.add(new Diagonal(this, i));
         }
 
+        // Skapa 8*8=64 rutor
         for (int i = 0; i < 8; i++) {
-            // Make row 1 be first one from bottom
             for (int j = 0; j < 8; j++) {
+                // ange korrekt kolumn, rad, färg samt plats på brädet
                 squares.add(new Square(this, columns.get(j), rows.get(i), ChessColor.values()[(j+i%2)% 2], new Point(j*100, i*100)));
             }
         }
@@ -90,6 +94,7 @@ public class Game {
     }
 
     private void startPositions() {
+        // Skapa alla svarta pjäser
         blackPieces.add(new Rook(getBlackPlayer()));
         blackPieces.add(new Knight(getBlackPlayer()));
         blackPieces.add(new Bishop(getBlackPlayer()));
@@ -101,6 +106,8 @@ public class Game {
         for (int i = 0 ; i < 8; i++) {
             blackPieces.add(new Pawn(getBlackPlayer()));
         }
+
+        // Skapa alla vita pjäser
         for (int i = 0 ; i < 8; i++) {
             whitePieces.add(new Pawn(getWhitePlayer()));
         }
@@ -113,6 +120,7 @@ public class Game {
         whitePieces.add(new Knight(getWhitePlayer()));
         whitePieces.add(new Rook(getWhitePlayer()));
 
+        // Sätt samtliga pjäser på rätt ruta
         for (int i = 0; i < 16; i++) {
             squares.get(i).setPiece(blackPieces.get(i));
         }
@@ -122,11 +130,39 @@ public class Game {
     }
 
 
+    // Returnera kungen av en viss färg
     public King getKing(ChessColor color) {
+        // Loopa igenom alla pjäser av den färgen och se ifall det är en kung
         for (Piece piece : getPieces(color)) {
             if (piece instanceof King) return (King) piece;
         }
         return null;
+    }
+
+    // Returnera på en viss rad och kolumn
+    public Square getSquare(int column, int row) {
+        // Loopa igenom alla rutor
+        for (Square square : squares) {
+            // Kolla om kolumn-id och rad-id stämmer överens
+            if (square.getColumn().getId() == column && square.getRow().getId() == row) return square;
+        }
+        return null;
+    }
+
+    // Returnera alla pjäser av en viss färg
+    public List<Piece> getPieces(ChessColor color) {
+        if (color == ChessColor.WHITE) return whitePieces;
+        else return blackPieces;
+    }
+
+    // Returnera diagonalen till en viss column och rad (ruta)
+    public List<Diagonal> getDiagonals(Column column, Row row) {
+        List<Diagonal> diagonals = new ArrayList<>();
+        // Första diagonalen får man genom summan av rad och kolumn
+        diagonals.add(this.diagonals.get(column.getId() + row.getId()));
+        // Andra diagonalen får man genom att ta differensen av rad-id och kolumn-id och addera 22
+        diagonals.add(this.diagonals.get(22+row.getId()-column.getId()));
+        return diagonals;
     }
 
     public List<Piece> getBlackPieces() {
@@ -136,12 +172,6 @@ public class Game {
         return this.whitePieces;
     }
 
-    public Square getSquare(int column, int row) {
-        for (Square square : squares) {
-            if (square.getColumn().getId() == column && square.getRow().getId() == row) return square;
-        }
-        return null;
-    }
 
     public Column getColumn(int id) {
         for (Column column : columns) {
@@ -161,28 +191,8 @@ public class Game {
         else blackPieces.remove(piece);
     }
 
-    public List<Piece> getPieces(ChessColor color) {
-        if (color == ChessColor.WHITE) return whitePieces;
-        else return blackPieces;
-    }
-
     public void checkmate() {
         System.out.println("Checkmate");
-        /*
-        setStartPositions();
-        turn = 0;
-         */
-    }
-
-    public void pawnPromotion() {
-
-    }
-
-    public List<Diagonal> getDiagonals(Column column, Row row) {
-        List<Diagonal> diagonals = new ArrayList<>();
-        diagonals.add(this.diagonals.get(column.getId() + row.getId()));
-        diagonals.add(this.diagonals.get(22+row.getId()-column.getId()));
-        return diagonals;
     }
 
 }

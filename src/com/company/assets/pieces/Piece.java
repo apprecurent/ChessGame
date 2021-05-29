@@ -153,18 +153,26 @@ public abstract class Piece {
     }
 
     public List<Square> getRowSquares() {
+        // Samtliga rutor (även de opåverkade) läggs till
         List<Square> squares = new ArrayList<>(this.getSquare().getRow().getSquares());
+        // Ta bort den rutan som pjäsen står på (kan ej göra ett drag till samma ruta)
         squares.remove(this.getSquare());
+        // Lista med rutor som ska tas bort innan metoden returneras (alla som är opåverkade)
         List<Square> removeSquares = new ArrayList<>();
 
+        // Loopa igenom alla rutor (gå igenom varje ruta en och en och kolla följande: )
         for (int i = squares.size() - 1; i >= 0; i--) {
+
+            // Slipper skriva squares.get(i) för att få den aktuella rutan (behöver endast skriva square)
             Square square = squares.get(i);
+
+            // Kör endast ifall rutan har en pjäs
             if (square.hasPiece() && !square.getPiece().equals(this)) {
 
-
-                // Same Row
+                // Kör endast ifall rutan är på samma rad som den rutan som pjäsen står på
                 if (square.getRow().equals(this.getSquare().getRow())) {
-                    // Lower column id (more left)
+
+                    // (1)
                     if (square.getColumn().getId() < this.getSquare().getColumn().getId()) {
                         List<Square> belowRowSquares = this.getSquare().getRow().getSquares().subList(0, this.getSquare().getColumn().getId());
                         for (int j = belowRowSquares.size() - 1; j >= 0; j--) {
@@ -174,7 +182,7 @@ public abstract class Piece {
                                 break;
                             }
                         }
-                        // Higher column id (more right)
+                        // (2)
                     } else {
                         List<Square> belowRowSquares = this.getSquare().getRow().getSquares().subList(this.getSquare().getColumn().getId() + 1, this.getSquare().getColumn().getSquares().size());
                         for (int j = 0; j < belowRowSquares.size(); j++) {

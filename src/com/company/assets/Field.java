@@ -7,10 +7,6 @@ import java.util.List;
 
 public abstract class Field {
 
-    public enum FieldConstants {
-        COLUMN, ROW, DIAGONAL_LEFT, DIAGONAL_RIGHT
-    }
-
     private Game game;
     private int id;
 

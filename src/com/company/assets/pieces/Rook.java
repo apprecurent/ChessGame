@@ -48,6 +48,7 @@ public class Rook extends Piece {
 
     @Override
     public List<Square> getInfluencedSquares() {
+        // Lägg till i Set för att ta bort dubbletter
         Set<Square> squares = new LinkedHashSet<>();
         squares.addAll(this.getInfluencedRowSquares());
         squares.addAll(this.getInfluencedColumnSquares());
