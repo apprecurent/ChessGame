@@ -94,6 +94,8 @@ public class Game {
     }
 
     private void startPositions() {
+
+
         // Skapa alla svarta pjäser
         blackPieces.add(new Rook(getBlackPlayer()));
         blackPieces.add(new Knight(getBlackPlayer()));
@@ -127,6 +129,33 @@ public class Game {
         for (int i = 0; i < 16; i++) {
             squares.get(i+48).setPiece(whitePieces.get(i));
         }
+
+
+        /*
+        whitePieces.add(new Queen(getWhitePlayer()));
+
+        squares.get(53).setPiece(whitePieces.get(0));
+
+        blackPieces.add(new King(getBlackPlayer()));
+
+        squares.get(50).setPiece(blackPieces.get(0));
+
+        whitePieces.add(new Queen(getWhitePlayer()));
+
+        squares.get(37).setPiece(whitePieces.get(1));
+
+        whitePieces.add(new King(getWhitePlayer()));
+
+        squares.get(34).setPiece(whitePieces.get(2));
+
+        whitePieces.add(new Queen(getWhitePlayer()));
+
+        squares.get(21).setPiece(whitePieces.get(3));
+
+        blackPieces.add(new Queen(getBlackPlayer()));
+
+        squares.get(18).setPiece(blackPieces.get(1));
+         */
     }
 
 

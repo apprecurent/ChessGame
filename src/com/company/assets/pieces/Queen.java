@@ -34,6 +34,8 @@ public class Queen extends Piece {
             // Ta bort alla andra möjliga och lägg endast till the blockeringsbara rutorna
             squares.clear();
             squares.addAll(checkSquares);
+
+            //
         } else if (this.getSquares().contains(king.getSquare())){
             // Remove all squares that can not be accessed due to the king being in check
             for (Piece piece : getGame().getPieces(otherColor)) {
