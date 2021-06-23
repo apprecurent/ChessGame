@@ -108,13 +108,18 @@ public class Game {
 
         int rand = random.nextInt(moves.size());
 
-        moves.get(rand).getPiece().getSquare().removePiece();
-        moves.get(rand).getPiece().move(moves.get(rand).getSquare());
+        simMove(moves.get(rand));
     }
 
     private int score = 0;
     private int iteration = 0;
     private Map<Move, Integer> moveScore;
+
+    public void simMove(Move move) {
+        board.cleanup();
+        move.getPiece().getSquare().removePiece();
+        move.getPiece().move(move.getSquare());
+    }
 
     public int evaluate(Move move) {
         moveScore = new HashMap<>();

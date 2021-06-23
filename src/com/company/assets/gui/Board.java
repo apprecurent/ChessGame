@@ -108,17 +108,16 @@ public class Board extends JLayeredPane implements MouseListener, MouseMotionLis
         turn = 1 - turn;
     }
 
-    private void cleanup() {
+    public void cleanup() {
         lastSquare.setActive(false);
         if (selectedPiece instanceof King) lastSquare.setChecked(((King) selectedPiece).isChecked());
         for (Square accessibleSquare : game.getSquares()) {
             accessibleSquare.setMarked(false);
             accessibleSquare.setSelectable(false);
             accessibleSquare.setCapturable(false);
+            accessibleSquare.setChecked(false);
         }
         repaint();
-        selectedPiece.givePriority(false);
-        selectedPiece = null;
     }
 
     @Override
