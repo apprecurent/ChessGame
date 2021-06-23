@@ -6,7 +6,8 @@ import com.company.assets.gui.Board;
 import com.company.assets.pieces.*;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.util.*;
 import java.util.List;
 
 public class Game {
@@ -91,6 +92,55 @@ public class Game {
 
         blackPieces = new ArrayList<>();
         whitePieces = new ArrayList<>();
+    }
+
+    private Position position;
+
+    public void makeMove() {
+        List<Move> moves = new ArrayList<>();
+        for (Piece piece : getBlackPieces()) {
+            for (Square square : piece.getAccessibleSquares()) {
+                moves.add(new Move(piece, square));
+            }
+        }
+
+        Random random = new Random();
+
+        int rand = random.nextInt(moves.size());
+
+        moves.get(rand).getPiece().getSquare().removePiece();
+        moves.get(rand).getPiece().move(moves.get(rand).getSquare());
+    }
+
+    private int score = 0;
+    private int iteration = 0;
+    private Map<Move, Integer> moveScore;
+
+    public int evaluate(Move move) {
+        moveScore = new HashMap<>();
+        while (iteration != 3) {
+
+        }
+
+        moveScore.put(move, score);
+
+        iteration = 0;
+
+        return score;
+    }
+
+    public void setSavedPosition(Position position) {
+        this.position = position;
+    }
+
+    public void setPosition(Position position) {
+        for (Piece piece : position.getWhitePieces()) {
+            piece.setSquare(piece.getSquare());
+        }
+
+        for (Piece piece : position.getBlackPieces()) {
+            piece.setSquare(piece.getSquare());
+        }
     }
 
     private void startPositions() {

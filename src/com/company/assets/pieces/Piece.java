@@ -3,6 +3,7 @@ package com.company.assets.pieces;
 import com.company.assets.*;
 import com.company.assets.game.Game;
 import com.company.assets.game.Player;
+import com.company.assets.game.Position;
 import com.company.assets.gui.Board;
 
 import javax.swing.*;
@@ -11,8 +12,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public abstract class Piece {
+public abstract class Piece implements Cloneable {
 
     private Player player;
     private Square square;
@@ -83,12 +85,20 @@ public abstract class Piece {
         square.setPiece(this);
         moves++;
 
-        if (this instanceof Pawn && (getSquare().getRow().getId() == 0 || getSquare().getRow().getId() == 7)) {
+        if (this instanceof Pawn && (getSquare().getRow().getId() == 0)) {
             getSquare().getPiece().getImageHolder().setVisible(false);
             getSquare().removePiece();
             getGame().deletePiece(this);
             Piece newPiece = new Queen(getGame().getWhitePlayer());
             getGame().getWhitePieces().add(newPiece);
+            getSquare().setPiece(newPiece);
+
+        } else if (this instanceof Pawn && (getSquare().getRow().getId() == 7)) {
+            getSquare().getPiece().getImageHolder().setVisible(false);
+            getSquare().removePiece();
+            getGame().deletePiece(this);
+            Piece newPiece = new Queen(getGame().getBlackPlayer());
+            getGame().getBlackPieces().add(newPiece);
             getSquare().setPiece(newPiece);
 
         }
@@ -113,7 +123,25 @@ public abstract class Piece {
                 break;
             }
         }
-        if (checkmate) getGame().checkmate();
+        if (checkmate) {
+            getGame().checkmate();
+            return true;
+        }
+
+        if (this.getColor() == ChessColor.WHITE) {
+            List<Piece> clonedPieces = new ArrayList<>();
+            for (Piece piece : getGame().getBlackPieces()) {
+                try {
+                    clonedPieces.add((Piece) piece.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            getGame().setSavedPosition(new Position(getGame().getWhitePieces(), clonedPieces));
+            getGame().makeMove();
+        }
+
         return true;
     }
 
