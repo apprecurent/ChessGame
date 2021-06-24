@@ -41,6 +41,24 @@ public class Pawn extends Piece {
         }
 
         // Square infront
+        if (value == -1 && getSquare().getRow().getId() == 0) {
+            getSquare().getPiece().getImageHolder().setVisible(false);
+            getSquare().removePiece();
+            getGame().deletePiece(this);
+            Piece newPiece = new Queen(getGame().getWhitePlayer());
+            getGame().getWhitePieces().add(newPiece);
+            getSquare().setPiece(newPiece);
+            return new ArrayList<>();
+
+        } else if (value == 1 && getSquare().getRow().getId() == 7) {
+            getSquare().getPiece().getImageHolder().setVisible(false);
+            getSquare().removePiece();
+            getGame().deletePiece(this);
+            Piece newPiece = new Queen(getGame().getWhitePlayer());
+            getGame().getWhitePieces().add(newPiece);
+            getSquare().setPiece(newPiece);
+            return new ArrayList<>();
+        }
         Square square = getSquare().getColumn().getSquares().get(getSquare().getRow().getId() + value);
         if (!square.hasPiece()) {
             squares.add(square);

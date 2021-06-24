@@ -81,7 +81,6 @@ public abstract class Piece implements Cloneable {
                 }
             }
         }
-        getGame().getBoard().changeTurn();
         square.setPiece(this);
         moves++;
 
@@ -128,21 +127,37 @@ public abstract class Piece implements Cloneable {
             return true;
         }
 
-        if (this.getColor() == ChessColor.WHITE) {
-            List<Piece> clonedPieces = new ArrayList<>();
-            for (Piece piece : getGame().getBlackPieces()) {
-                try {
-                    clonedPieces.add((Piece) piece.clone());
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            getGame().setSavedPosition(new Position(getGame().getWhitePieces(), clonedPieces));
+        if (this.getColor() == ChessColor.WHITE && getGame().isRecursive()) {
+            getGame().setRecursive(false);
+            getGame().setSavedPosition(new Position(getWhitePiecesClone(), getBlackPiecesClone()));
             getGame().makeMove();
         }
 
         return true;
+    }
+
+    public List<Piece> getWhitePiecesClone() {
+        List<Piece> clonedWhitePieces = new ArrayList<>();
+        for (Piece piece : getGame().getWhitePieces()) {
+            try {
+                clonedWhitePieces.add((Piece) piece.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        return clonedWhitePieces;
+    }
+
+    public List<Piece> getBlackPiecesClone() {
+        List<Piece> clonedBlackPieces = new ArrayList<>();
+        for (Piece piece : getGame().getBlackPieces()) {
+            try {
+                clonedBlackPieces.add((Piece) piece.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        return clonedBlackPieces;
     }
 
     public abstract List<Square> getAccessibleSquares();
@@ -384,7 +399,7 @@ public abstract class Piece implements Cloneable {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + " " + getColor();
+        return getClass().getSimpleName() + " " + getColor() + " [ " + getSquare().getColumn().getId() + ", " + getSquare().getRow().getId() + "]";
     }
 
 

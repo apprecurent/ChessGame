@@ -66,7 +66,7 @@ public class Board extends JLayeredPane implements MouseListener, MouseMotionLis
     public void mousePressed(MouseEvent e) {
         for (Square square : game.getSquares()) {
             if (square.isHit(e.getPoint()) && square.hasPiece()) {
-                ChessColor color = ChessColor.values()[turn];
+                ChessColor color = ChessColor.WHITE;
                 // Not their turn
                 if (color != square.getPiece().getColor()) return;
 
@@ -93,6 +93,7 @@ public class Board extends JLayeredPane implements MouseListener, MouseMotionLis
         if (selectedPiece != null) {
             for (Square square : game.getSquares()) {
                 if (square.isHit(e.getPoint())) {
+                    game.setRecursive(true);
                     if (!selectedPiece.move(square)) lastSquare.setPiece(selectedPiece);
                     cleanup();
                     square.setMarked(true);
@@ -118,6 +119,11 @@ public class Board extends JLayeredPane implements MouseListener, MouseMotionLis
             accessibleSquare.setChecked(false);
         }
         repaint();
+        selectedPiece = null;
+    }
+
+    public void setSelectedPiece(Piece piece) {
+        this.selectedPiece = piece;
     }
 
     @Override

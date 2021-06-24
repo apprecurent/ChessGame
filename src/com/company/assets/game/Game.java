@@ -46,12 +46,12 @@ public class Game {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 // ange korrekt kolumn, rad, färg samt plats på brädet
-                squares.add(new Square(this, columns.get(j), rows.get(i), ChessColor.values()[(j+i%2)% 2], new Point(j*100, i*100)));
+                squares.add(new Square(this, columns.get(j), rows.get(i), ChessColor.values()[(j + i % 2) % 2], new Point(j * 100, i * 100)));
             }
         }
     }
 
-    public Game(Board board, Player player1, Player player2) throws PlayerColorException{
+    public Game(Board board, Player player1, Player player2) throws PlayerColorException {
         this();
         this.board = board;
 
@@ -71,7 +71,7 @@ public class Game {
     public Board getBoard() {
         return this.board;
     }
-    
+
     public Player getWhitePlayer() {
         return player1.getColor() == ChessColor.WHITE ? player1 : player2;
     }
@@ -96,7 +96,7 @@ public class Game {
 
     private Position position;
 
-    public void makeMove() {
+    public void makeMove() throws StackOverflowError{
         List<Move> moves = new ArrayList<>();
         for (Piece piece : getBlackPieces()) {
             for (Square square : piece.getAccessibleSquares()) {
@@ -104,34 +104,64 @@ public class Game {
             }
         }
 
+
         Random random = new Random();
 
         int rand = random.nextInt(moves.size());
 
-        simMove(moves.get(rand));
+
+        for (Move move : moves) {
+            evaluate(move);
+            setPosition(position);
+        }
+    }
+
+    public void simMove(Move move) {
+        board.setSelectedPiece(move.getPiece());
+        board.cleanup();
+        move.getPiece().getSquare().removePiece();
+        move.getPiece().move(move.getSquare());
     }
 
     private int score = 0;
     private int iteration = 0;
     private Map<Move, Integer> moveScore;
 
-    public void simMove(Move move) {
-        board.cleanup();
-        move.getPiece().getSquare().removePiece();
-        move.getPiece().move(move.getSquare());
-    }
-
     public int evaluate(Move move) {
+        /*
         moveScore = new HashMap<>();
-        while (iteration != 3) {
+        moveScore.put(move, score);
+         */
 
+        simMove(move);
+
+        Position position = new Position(move.getPiece().getWhitePiecesClone(), move.getPiece().getBlackPiecesClone());
+
+        List<Move> moves = new ArrayList<>();
+        for (Piece piece : getWhitePieces()) {
+            for (Square square : piece.getAccessibleSquares()) {
+                moves.add(new Move(piece, square));
+            }
         }
 
-        moveScore.put(move, score);
 
-        iteration = 0;
+        for (Move newMove : moves) {
+            simMove(newMove);
+            setPosition(position);
+        }
+
 
         return score;
+    }
+
+    private boolean recursive;
+
+    public void setRecursive(boolean recursive) {
+        this.recursive = recursive;
+    }
+
+    public boolean isRecursive() {
+        return this.recursive;
     }
 
     public void setSavedPosition(Position position) {
@@ -139,13 +169,30 @@ public class Game {
     }
 
     public void setPosition(Position position) {
+        for (Piece piece : getWhitePieces()) {
+            piece.getImageHolder().setVisible(false);
+            piece.getSquare().removePiece();
+        }
+
+        for (Piece piece : getBlackPieces()) {
+            piece.getImageHolder().setVisible(false);
+            piece.getSquare().removePiece();
+        }
+
         for (Piece piece : position.getWhitePieces()) {
+            piece.getImageHolder().setVisible(true);
             piece.setSquare(piece.getSquare());
+            piece.getSquare().setPiece(piece);
         }
 
         for (Piece piece : position.getBlackPieces()) {
+            piece.getImageHolder().setVisible(true);
             piece.setSquare(piece.getSquare());
+            piece.getSquare().setPiece(piece);
         }
+
+        whitePieces = new ArrayList<>(position.getWhitePieces());
+        blackPieces = new ArrayList<>(position.getBlackPieces());
     }
 
     private void startPositions() {
@@ -160,12 +207,12 @@ public class Game {
         blackPieces.add(new Bishop(getBlackPlayer()));
         blackPieces.add(new Knight(getBlackPlayer()));
         blackPieces.add(new Rook(getBlackPlayer()));
-        for (int i = 0 ; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             blackPieces.add(new Pawn(getBlackPlayer()));
         }
 
         // Skapa alla vita pjäser
-        for (int i = 0 ; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             whitePieces.add(new Pawn(getWhitePlayer()));
         }
         whitePieces.add(new Rook(getWhitePlayer()));
@@ -182,7 +229,7 @@ public class Game {
             squares.get(i).setPiece(blackPieces.get(i));
         }
         for (int i = 0; i < 16; i++) {
-            squares.get(i+48).setPiece(whitePieces.get(i));
+            squares.get(i + 48).setPiece(whitePieces.get(i));
         }
 
 
@@ -245,13 +292,14 @@ public class Game {
         // Första diagonalen får man genom summan av rad och kolumn
         diagonals.add(this.diagonals.get(column.getId() + row.getId()));
         // Andra diagonalen får man genom att ta differensen av rad-id och kolumn-id och addera 22
-        diagonals.add(this.diagonals.get(22+row.getId()-column.getId()));
+        diagonals.add(this.diagonals.get(22 + row.getId() - column.getId()));
         return diagonals;
     }
 
     public List<Piece> getBlackPieces() {
         return this.blackPieces;
     }
+
     public List<Piece> getWhitePieces() {
         return this.whitePieces;
     }
@@ -263,6 +311,7 @@ public class Game {
         }
         return null;
     }
+
     public Row getRow(int id) {
         for (Row row : rows) {
             if (row.getId() == id) return row;
